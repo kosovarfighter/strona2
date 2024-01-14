@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Text Input</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 300px;
+            margin-bottom: 10px;
+            padding: 5px;
+        }
+
+        #output {
+            border: 1px solid #ccc;
+            padding: 10px;
+            margin-top: 10px;
+            text-align: left;
+        }
+
+        .message {
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            position: relative;
+        }
+
+        .username {
+            color: red;
+            font-weight: bold;
+        }
+
+        .replyButton {
+            background-color: #4CAF50;
+            color: white;
+            padding: 5px 10px;
+            text-decoration: none;
+            font-size: 14px;
+            cursor: pointer;
+            margin-left: 5px;
+            display: inline-block;
+        }
+
+        .replyInput {
+            width: 250px;
+            margin-bottom: 5px;
+            padding: 5px;
+        }
+
+        .thread {
+            margin-left: 20px; /* Adjust the indentation as needed */
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <input type="text" id="usernameInput" placeholder="nazwa">
+        <br>
+        <textarea id="textInput" placeholder="pytanie" onkeydown="if(event.keyCode==13) displayText();"></textarea>
+     
+<button id="displayButton" onclick="displayText()">enter</button>
+        <div id="output"></div>
+<a href="https://jakzrobicwexcelu.pl">redirect</a>   
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const usernameInput = document.getElementById('usernameInput');
+            const textInput = document.getElementById('textInput');
+            const outputDiv = document.getElementById('output');
+            let username = '';
+
+            function displayText() {
+                const text = textInput.value.trim();
+
+                if (!username) {
+                    username = usernameInput.value.trim();
+
+                    if (!username) {
+                        alert('Please enter a username.');
+                        return;
+                    }
+                }
+
+                if (!text) {
+                    alert('Please enter text.');
+                    return;
+                }
+
+                const messageId = `msg_${Date.now()}`;
+                const message = `<div class="message" id="${messageId}"><span class="username">${username}:</span> ${text}<button class="replyButton" onclick="toggleReplyBox('${messageId}')">odpowiedz</button><div class="replyInput" style="display:none;"><input type="text" id="replyInput_${messageId}" placeholder="Twoja odpowiedz"><button onclick="submitReply('${messageId}')">enter</button></div></div>`;
+                outputDiv.innerHTML += message;
+
+                // Clear the input for the next message
+                textInput.value = '';
+            }
+
+            window.displayText = displayText;
+        });
+
+        function toggleReplyBox(messageId) {
+            const parentMessage = document.getElementById(messageId);
+            const replyInput = parentMessage.querySelector('.replyInput');
+            replyInput.style.display = replyInput.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function submitReply(messageId) {
+            const parentMessage = document.getElementById(messageId);
+            const replyInput = parentMessage.querySelector('input[type="text"]');
+            const replyText = replyInput.value.trim();
+
+            if (!replyText) {
+                alert('Please enter a reply.');
+                return;
+            }
+
+            const replyUsername = prompt('Enter your username for the reply:');
+            if (!replyUsername) {
+                alert('Please enter a username for the reply.');
+                return;
+            }
+
+            const replyMessage = `<div class="message thread"><span class="username">${replyUsername} odpowiada:</span> ${replyText}</div>`;
+            parentMessage.innerHTML += replyMessage;
+
+            // Clear the reply input
+            replyInput.value = '';
+        }
+    </script>
+</body>
+</html>
